@@ -1,79 +1,14 @@
-// Mount: <div id="tattty-generate-root"></div>
-// Optional overrides (read in this priority order, same as mailman-v3.html):
-//   window.PRODUCT_VERSION / [data-version] / [data-metafield="custom.version"]
-//   window.CUSTOMER_ID / [data-customer-id] / #customer_id / input[name="customer_id"] / [data-metafield="customer_id"]
-//   window.PRODUCT_TRIGGER_WORD / [data-metafield="custom.trigger_word"]
-//   window.PRODUCT_ARTIST_RATING / [data-metafield="custom.artist_model_rating"]
-//   window.PRODUCT_IMAGE_URL / [data-metafield="custom.image_url"]
-//   window.TATTTY_WORKER_URL (default https://api.tattty.com)
-//   window.TATTTY_UPLOAD_URL (default https://model.avi-kay2019.workers.dev)
+// Mount: <div id="tattty-generate-root"
+//             data-version="{{ product.metafields.custom.version }}"
+//             data-customer-id="{{ customer.id }}"
+//             data-trigger-word="{{ product.metafields.custom.trigger_word }}"
+//             data-artist-model-rating="{{ product.metafields.custom.artist_model_rating }}"
+//             data-image-url="{{ product.metafields.custom.image_url }}"></div>
+// Then include this script after that div.
 (function () {
-  function getWorkerUrl() {
-    return (typeof window !== "undefined" && window.TATTTY_WORKER_URL) || "https://api.tattty.com";
-  }
-  function getUploadUrl() {
-    return (typeof window !== "undefined" && window.TATTTY_UPLOAD_URL) || "https://model.avi-kay2019.workers.dev";
-  }
-  function getVersion() {
-    if (typeof window !== "undefined") {
-      if (window.PRODUCT_VERSION != null && window.PRODUCT_VERSION !== "") return String(window.PRODUCT_VERSION);
-      var el = document.querySelector('[data-version],[data-metafield="custom.version"]');
-      if (el) {
-        var v = (el.getAttribute("data-version") || el.getAttribute("data-value") || el.value || el.textContent || "").trim();
-        if (v) return v;
-      }
-    }
-    return "";
-  }
-  function getCustomerId() {
-    if (typeof window !== "undefined") {
-      if (window.CUSTOMER_ID != null && window.CUSTOMER_ID !== "") return String(window.CUSTOMER_ID);
-      var el = document.querySelector('[data-customer-id],#customer_id,input[name="customer_id"],[data-metafield="customer_id"]');
-      if (el) {
-        var v = (el.getAttribute("data-customer-id") || el.value || el.getAttribute("data-value") || el.textContent || "").trim();
-        if (v) return v;
-      }
-    }
-    return "";
-  }
-  function getTriggerWord() {
-    if (typeof window !== "undefined") {
-      if (window.PRODUCT_TRIGGER_WORD) return String(window.PRODUCT_TRIGGER_WORD);
-      var el = document.querySelector('[data-metafield="custom.trigger_word"]');
-      if (el) {
-        var v = (el.getAttribute("data-value") || el.textContent || "").trim();
-        if (v) return v;
-      }
-    }
-    return "trigger";
-  }
-  function getArtistRating() {
-    if (typeof window !== "undefined") {
-      if (window.PRODUCT_ARTIST_RATING != null) {
-        var n = parseFloat(window.PRODUCT_ARTIST_RATING);
-        if (!isNaN(n)) return n;
-      }
-      var el = document.querySelector('[data-metafield="custom.artist_model_rating"]');
-      if (el) {
-        var v = parseFloat(el.getAttribute("data-value") || el.textContent);
-        if (!isNaN(v)) return v;
-      }
-    }
-    return 4.8;
-  }
-  var DEFAULT_REFERENCE_IMAGE_URL = "https://tattty-uploads.tattty.com/TaTTTy-Logo-1024x1024%20(3).png";
-
-  function getReferenceImageUrl() {
-    if (typeof window !== "undefined") {
-      if (window.PRODUCT_IMAGE_URL) return String(window.PRODUCT_IMAGE_URL);
-      var el = document.querySelector('[data-metafield="custom.image_url"]');
-      if (el) {
-        var v = (el.getAttribute("data-value") || el.getAttribute("src") || el.textContent || "").trim();
-        if (v) return v;
-      }
-    }
-    return DEFAULT_REFERENCE_IMAGE_URL;
-  }
+  var WORKER_URL = "https://api.tattty.com";
+  var UPLOAD_URL = "https://model.avi-kay2019.workers.dev";
+  var FALLBACK_REFERENCE_IMAGE_URL = "https://tattty-uploads.tattty.com/TaTTTy-Logo-1024x1024%20(3).png";
 
   var styles = {
     page: "min-height:680px;width:100%;background:#e9e9e9;display:flex;align-items:center;justify-content:center;padding:24px;font-family:'Poppins',system-ui,-apple-system,sans-serif;box-sizing:border-box;",
@@ -155,7 +90,12 @@
 
   var keyframes =
     "@keyframes tattty3-spin{to{transform:rotate(360deg)}}" +
-    "@keyframes tattty3-shimmer{0%{background-position:-440px 0}100%{background-position:440px 0}}";
+    "@keyframes tattty3-shimmer{0%{background-position:-440px 0}100%{background-position:440px 0}}" +
+    ".tattty3-slider{-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;background:#e4e5e8;outline:none;}" +
+    ".tattty3-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#16181a;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.28);cursor:pointer;margin-top:-6px;}" +
+    ".tattty3-slider::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#16181a;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.28);cursor:pointer;}" +
+    ".tattty3-slider::-webkit-slider-runnable-track{height:6px;border-radius:999px;}" +
+    ".tattty3-slider::-moz-range-track{height:6px;border-radius:999px;background:#e4e5e8;}";
   if (!document.getElementById("tattty3-keyframes")) {
     var styleTag = document.createElement("style");
     styleTag.id = "tattty3-keyframes";
@@ -194,6 +134,13 @@
   };
 
   function mount(root) {
+    var version = root.getAttribute("data-version") || "";
+    var customerId = root.getAttribute("data-customer-id") || "";
+    var triggerWord = root.getAttribute("data-trigger-word") || "trigger";
+    var artistRatingAttr = parseFloat(root.getAttribute("data-artist-model-rating"));
+    var artistRating = isNaN(artistRatingAttr) ? 4.8 : artistRatingAttr;
+    var referenceImageUrl = root.getAttribute("data-image-url") || FALLBACK_REFERENCE_IMAGE_URL;
+
     var state = {
       imageSrc: null,
       file: null,
@@ -296,7 +243,14 @@
 
     var outputsRow = el("div", styles.outputsRow);
     var outputsLabel = el("span", styles.outputsLabel, { text: "Outputs" });
-    var outputsSlider = el("input", styles.outputsSlider, { type: "range", min: "1", max: "4", step: "1", value: "4" });
+    var outputsSlider = el("input", styles.outputsSlider, {
+      type: "range",
+      min: "1",
+      max: "4",
+      step: "1",
+      value: "4",
+      class: "tattty3-slider",
+    });
     var outputsValue = el("span", styles.outputsValue, { text: "4" });
     outputsSlider.addEventListener("input", function (e) {
       state.outputs = Math.max(1, Math.min(4, parseInt(e.target.value, 10) || 1));
@@ -337,7 +291,7 @@
 
     function renderStars() {
       starsGroup.innerHTML = "";
-      var rating = getArtistRating();
+      var rating = artistRating;
       var filled = Math.round(rating);
       for (var i = 0; i < 5; i++) {
         var fillColor = i < filled ? "#16181a" : "#dcdce0";
@@ -350,22 +304,13 @@
     }
 
     function renderTrigger() {
-      triggerBadge.textContent = getTriggerWord();
+      triggerBadge.textContent = triggerWord;
     }
 
     function renderRefImage() {
       refBox.innerHTML = "";
-      var imgUrl = getReferenceImageUrl();
-      if (imgUrl) {
-        var img = el("img", styles.refImg, { src: imgUrl, alt: "reference" });
-        refBox.appendChild(img);
-      } else {
-        var placeholder = el("div", styles.refImagePlaceholder);
-        placeholder.appendChild(svgIcon(ICONS.photo, 34));
-        var label = el("span", null, { text: "custom.image_url" });
-        placeholder.appendChild(label);
-        refBox.appendChild(placeholder);
-      }
+      var img = el("img", styles.refImg, { src: referenceImageUrl, alt: "reference" });
+      refBox.appendChild(img);
     }
 
     function renderCredit() {
@@ -671,7 +616,7 @@
       if (state.file) {
         var fd = new FormData();
         fd.append("file", state.file);
-        uploadPromise = fetch(getUploadUrl(), { method: "POST", body: fd })
+        uploadPromise = fetch(UPLOAD_URL, { method: "POST", body: fd })
           .then(function (res) {
             if (!res.ok) {
               return res.text().then(function (t) {
@@ -688,15 +633,15 @@
 
       uploadPromise
         .then(function (uploadUrl) {
-          return fetch(getWorkerUrl(), {
+          return fetch(WORKER_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              version: getVersion(),
+              version: version,
               prompt: prompt,
               numOutputs: n,
               uploads: uploadUrl,
-              customer_id: getCustomerId(),
+              customer_id: customerId,
             }),
           });
         })
@@ -753,15 +698,8 @@
     renderNotice();
     renderDropZone();
 
-    var metafieldPoll = setInterval(function () {
-      renderStars();
-      renderTrigger();
-      renderRefImage();
-    }, 600);
-
     window.addEventListener("beforeunload", function () {
       stopCamera();
-      clearInterval(metafieldPoll);
     });
 
     root.appendChild(page);
