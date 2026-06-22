@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<template id="__bundler_thumbnail">
+<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#16181a,#3a3a3a);">
+<svg width="40%" height="40%" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+</div>
+</template>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Rock+Salt&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+body{font-family:'Poppins',system-ui,-apple-system,sans-serif;background:#fff;color:#141414;-webkit-font-smoothing:antialiased;}
+textarea,select,button{font-family:inherit;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-440px 0}100%{background-position:440px 0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.scl::-webkit-scrollbar{width:8px;height:10px}
+.scl::-webkit-scrollbar-thumb{background:#d4d6da;border-radius:8px}
+.scl::-webkit-scrollbar-track{background:transparent}
+.osl{-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;background:#e4e5e8;outline:none;}
+.osl::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#16181a;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.28);cursor:pointer;margin-top:-6px;}
+.osl::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#16181a;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.28);cursor:pointer;}
+.osl::-webkit-slider-runnable-track{height:6px;border-radius:999px;}
+.osl::-moz-range-track{height:6px;border-radius:999px;background:#e4e5e8;}
+</style>
+</helmet>
+<div style="height:100vh;display:flex;flex-direction:column;background:#fff;">
+
+  <main style="flex:1;min-height:0;">
+
+    <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ true }}">
+      <div style="height:100%;display:flex;flex-direction:{{ createDir }};gap:{{ createGap }};padding:{{ createPad }};overflow-y:{{ createScroll }};">
+
+        <div onDrop="{{ onDrop }}" onDragOver="{{ onDragOver }}" style="flex:{{ leftFlex }};min-width:0;min-height:{{ leftMinH }};background:linear-gradient(180deg,#f6faff 0%,#ffffff 40%);border:1px solid #eef1f5;border-radius:24px;box-shadow:0 1px 2px rgba(20,30,60,.04),0 26px 64px -36px rgba(40,80,170,.22);padding:26px;display:flex;flex-direction:column;">
+          <input type="file" accept="image/*" ref="{{ fileInputRef }}" onChange="{{ onFile }}" style="display:none" />
+
+          <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;">
+
+            <sc-if value="{{ hasImage }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;">
+                {{ imageEl }}
+                <button onClick="{{ removeImage }}" style="position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showCamera }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;">
+                <video ref="{{ attachVideo }}" style="max-width:100%;max-height:62vh;border-radius:16px;background:#000;"></video>
+                <div style="display:flex;gap:12px;">
+                  <button onClick="{{ capture }}" style="padding:12px 26px;border-radius:12px;border:none;background:#16181a;color:#fff;font-size:14.5px;font-weight:600;cursor:pointer;">Capture</button>
+                  <button onClick="{{ cancelCamera }}" style="padding:12px 22px;border-radius:12px;border:1px solid #dfe2e6;background:#fff;color:#141414;font-size:14.5px;font-weight:500;cursor:pointer;">Cancel</button>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showUploadPrompt }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <div style="font-size:16px;color:#7c8088;">Start camera, upload a photo, or drag and drop an image.</div>
+                <div style="display:flex;gap:14px;margin-top:6px;">
+                  <button onClick="{{ startCamera }}" style="display:flex;align-items:center;gap:9px;padding:12px 20px;border-radius:12px;border:1px solid #dfe2e6;background:#fff;font-size:14.5px;font-weight:500;color:#141414;cursor:pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Start Camera
+                  </button>
+                  <button onClick="{{ triggerUpload }}" style="display:flex;align-items:center;gap:9px;padding:12px 20px;border-radius:12px;border:none;background:#f1f2f4;font-size:14.5px;font-weight:500;color:#141414;cursor:pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    Upload Photo
+                  </button>
+                </div>
+                <sc-if value="{{ cameraError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13px;color:#c0392b;max-width:320px;">{{ cameraError }}</div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ isResults }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;inset:0;padding:2px;display:flex;align-items:center;justify-content:center;">
+                <div style="display:grid;grid-template-columns:{{ gridCols }};grid-template-rows:{{ gridRows }};gap:10px;aspect-ratio:{{ gridAspect }};{{ gridFit }};max-width:100%;max-height:100%;">
+                  <sc-for list="{{ results }}" as="r" hint-placeholder-count="4">
+                    <div style="position:relative;min-height:0;min-width:0;border-radius:12px;overflow:hidden;background:#f3f3f4;box-shadow:0 4px 10px rgba(0,0,0,.12);animation:fadeUp .4s ease both;">
+                      <sc-if value="{{ r.loading }}" hint-placeholder-val="{{ true }}">
+                        <div style="position:absolute;inset:0;background:linear-gradient(110deg,#ececec 8%,#f6f6f6 18%,#ececec 33%);background-size:440px 100%;animation:shimmer 1.4s infinite linear;display:flex;align-items:center;justify-content:center;">
+                          <div style="width:38px;height:38px;border-radius:50%;border:3px solid #dadadd;border-top-color:#a9abb0;animation:spin .9s linear infinite;"></div>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ r.done }}" hint-placeholder-val="{{ false }}">
+                        <div onClick="{{ r.open }}" style="position:absolute;inset:0;cursor:zoom-in;">{{ r.imgEl }}</div>
+                        <div style="position:absolute;bottom:8px;right:8px;display:flex;gap:7px;">
+                          <button onClick="{{ r.download }}" title="Download" style="width:32px;height:32px;border-radius:8px;border:none;background:rgba(0,0,0,.6);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                          </button>
+                          <button onClick="{{ r.share }}" title="Share" style="width:32px;height:32px;border-radius:8px;border:none;background:rgba(0,0,0,.6);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                          </button>
+                        </div>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+          </div>
+
+          <div style="flex:none;margin-top:18px;padding-top:16px;">
+            <textarea value="{{ prompt }}" onChange="{{ onPrompt }}" placeholder="Or describe your own style — type a prompt to generate without picking presets…" style="width:100%;min-height:58px;max-height:130px;resize:vertical;border:1px solid #e6e8ec;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45;color:#141414;outline:none;background:#fff;"></textarea>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:5px;">
+              <span style="flex:1;line-height:1.05;font-size:{{ noticeSize }};text-align:{{ noticeAlign }};color:{{ noticeColor }};font-weight:{{ noticeWeight }};">{{ noticeText }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:{{ panelW }};flex:none;display:flex;flex-direction:column;gap:10px;">
+
+          <sc-if value="{{ showPanelExtras }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:none;padding:11px 14px;border-radius:14px;background:#f7f7f8;border:1px solid #ededf0;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:12.5px;color:#8b8f96;font-weight:500;">Artist Model Rating</span>
+            <div style="display:flex;align-items:center;gap:9px;">
+              <div style="display:flex;gap:2px;">
+                <sc-for list="{{ stars }}" as="s" hint-placeholder-count="5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="{{ s.fill }}" stroke="{{ s.fill }}" stroke-width="1.2" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </sc-for>
+              </div>
+              <span style="font-size:14px;font-weight:600;color:#141414;">{{ ratingText }}</span>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ showPanelExtras }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:none;padding:11px 14px;border-radius:14px;background:#f7f7f8;border:1px solid #ededf0;display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <span style="font-size:12.5px;color:#8b8f96;font-weight:500;">Trigger</span>
+            <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px;font-weight:600;color:#141414;background:#ececec;border:1px solid #e0e0e3;border-radius:8px;padding:5px 11px;">{{ triggerWord }}</span>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ showPanelExtras }}" hint-placeholder-val="{{ true }}">
+          <div style="flex:1;min-height:0;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;">
+            <div style="width:100%;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:#f0f0f2;border:1px solid #ededf0;display:flex;align-items:center;justify-content:center;">
+              {{ refImageEl }}
+            </div>
+          </div>
+          </sc-if>
+
+          <div style="flex:none;padding:11px 14px;border-radius:14px;background:#f7f7f8;border:1px solid #ededf0;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:12.5px;color:#8b8f96;font-weight:500;">Credit Cost</span>
+            <span style="font-size:14px;font-weight:600;color:#141414;">{{ creditText }}</span>
+          </div>
+
+          <div style="flex:none;padding:11px 14px;border-radius:14px;background:#f7f7f8;border:1px solid #ededf0;display:flex;align-items:center;gap:14px;">
+            <span style="font-size:12.5px;color:#8b8f96;font-weight:500;flex:none;">Outputs</span>
+            <input class="osl" type="range" min="1" max="4" step="1" value="{{ variations }}" onChange="{{ onSlider }}" onInput="{{ onSlider }}" style="flex:1;min-width:0;accent-color:{{ genBgSolid }};cursor:pointer;" />
+            <span style="font-size:14px;font-weight:700;color:#141414;flex:none;min-width:14px;text-align:right;">{{ variations }}</span>
+          </div>
+
+          <button onClick="{{ generate }}" disabled="{{ generateDisabled }}" style="flex:none;width:100%;height:53.5px;display:flex;align-items:center;justify-content:center;border:none;border-radius:14px;padding:0 12px;line-height:1;font-family:'Rock Salt',cursive;font-size:17px;font-weight:600;color:#fff;background:{{ genBg }};cursor:{{ genCursor }};transition:background .15s;">Ink Me Up</button>
+        </div>
+
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ lightboxOpen }}" hint-placeholder-val="{{ false }}">
+      <div onClick="{{ closeLightbox }}" style="position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;">
+        <button onClick="{{ closeLightbox }}" title="Close" style="position:absolute;top:16px;right:22px;background:none;border:none;color:#fff;font-size:36px;line-height:1;cursor:pointer;">×</button>
+        <sc-if value="{{ hasPrev }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ lbPrev }}" title="Previous" style="position:absolute;left:18px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:30px;line-height:1;cursor:pointer;">‹</button>
+        </sc-if>
+        <sc-if value="{{ hasNext }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ lbNext }}" title="Next" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:30px;line-height:1;cursor:pointer;">›</button>
+        </sc-if>
+        {{ lightboxImgEl }}
+        <div onClick="{{ lbStop }}" style="display:flex;gap:12px;margin-top:18px;">
+          <button onClick="{{ lbDownload }}" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:10px 18px;font-size:14px;font-weight:500;cursor:pointer;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+          </button>
+          <button onClick="{{ lbShare }}" style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:10px 18px;font-size:14px;font-weight:500;cursor:pointer;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share
+          </button>
+        </div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;primaryColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#000000&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = {
+    view: 'create',
+    imageSrc: null,
+    prompt: '',
+    variations: 4,
+    cameraOn: false,
+    cameraError: '',
+    error: '',
+    isMobile: false,
+    lightboxIndex: null,
+    results: []
+  };
+
+  get promptMode(){ return this.state.prompt.trim().length > 0; }
+  get primary(){ return (this.props && this.props.primaryColor) || '#16181a'; }
+  get canGenerate(){ return !!this.state.imageSrc; }
+
+  // Metafields read live from the page so they can be updated dynamically.
+  // Override window.PRODUCT_TRIGGER_WORD / .PRODUCT_ARTIST_RATING, or set
+  // [data-metafield="custom.trigger_word"] / [data-metafield="custom.artist_model_rating"].
+  get triggerWord(){
+    if(typeof window !== 'undefined'){
+      if(window.PRODUCT_TRIGGER_WORD) return String(window.PRODUCT_TRIGGER_WORD);
+      const el = document.querySelector('[data-metafield="custom.trigger_word"]');
+      if(el){ const v = (el.getAttribute('data-value') || el.textContent || '').trim(); if(v) return v; }
+    }
+    return 'trigger';
+  }
+  get artistRating(){
+    if(typeof window !== 'undefined'){
+      if(window.PRODUCT_ARTIST_RATING != null){ const v = parseFloat(window.PRODUCT_ARTIST_RATING); if(!isNaN(v)) return v; }
+      const el = document.querySelector('[data-metafield="custom.artist_model_rating"]');
+      if(el){ const v = parseFloat(el.getAttribute('data-value') || el.textContent); if(!isNaN(v)) return v; }
+    }
+    return 4.8;
+  }
+  get imageUrl(){
+    if(typeof window !== 'undefined'){
+      if(window.PRODUCT_IMAGE_URL) return String(window.PRODUCT_IMAGE_URL);
+      const el = document.querySelector('[data-metafield="custom.image_url"]');
+      if(el){ const v = (el.getAttribute('data-value') || el.getAttribute('src') || el.textContent || '').trim(); if(v) return v; }
+    }
+    return '';
+  }
+  // HIDDEN FIELD — customer id, injected by Shopify Liquid (e.g. {{ customer.id }}).
+  // Set window.CUSTOMER_ID, OR a hidden input/element: [data-customer-id], #customer_id,
+  // input[name="customer_id"], or [data-metafield="customer_id"].
+  get customerId(){
+    if(typeof window !== 'undefined'){
+      if(window.CUSTOMER_ID != null && window.CUSTOMER_ID !== '') return String(window.CUSTOMER_ID);
+      const el = document.querySelector('[data-customer-id],#customer_id,input[name="customer_id"],[data-metafield="customer_id"]');
+      if(el){ const v = (el.getAttribute('data-customer-id') || el.value || el.getAttribute('data-value') || el.textContent || '').trim(); if(v) return v; }
+    }
+    return '';
+  }
+  // HIDDEN FIELD — product version metafield custom.version.
+  // Set window.PRODUCT_VERSION, OR the mount's data-version attr, OR [data-metafield="custom.version"].
+  get version(){
+    if(typeof window !== 'undefined'){
+      if(window.PRODUCT_VERSION != null && window.PRODUCT_VERSION !== '') return String(window.PRODUCT_VERSION);
+      const el = document.querySelector('[data-version],[data-metafield="custom.version"]');
+      if(el){ const v = (el.getAttribute('data-version') || el.getAttribute('data-value') || el.value || el.textContent || '').trim(); if(v) return v; }
+    }
+    return '';
+  }
+
+  onPrompt = (e) => this.setState({ prompt: e.target.value, error: '' });
+  onSlider = (e) => this.setState({ variations: Math.max(1, Math.min(4, parseInt(e.target.value, 10) || 1)) });
+  setVariations = (d) => this.setState(s => ({ variations: Math.max(1, Math.min(4, s.variations + d)) }));
+
+  triggerUpload = () => { if(this.fileInputRef && this.fileInputRef.current) this.fileInputRef.current.click(); };
+  onFile = (e) => { const f = e.target.files && e.target.files[0]; if(f){ this._file = f; this.readFile(f); } e.target.value = ''; };
+  readFile = (f) => { const r = new FileReader(); r.onload = () => this.setState({ imageSrc: r.result, cameraOn: false }); r.readAsDataURL(f); };
+  onDrop = (e) => { e.preventDefault(); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if(f && f.type.indexOf('image/') === 0){ this._file = f; this.readFile(f); } };
+  onDragOver = (e) => e.preventDefault();
+  removeImage = () => { this._file = null; this.setState({ imageSrc: null }); };
+
+  startCamera = async () => {
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      this.setState({ cameraOn: true, cameraError: '' });
+    } catch(err) {
+      this.setState({ cameraError: 'Camera unavailable here — upload or drag a photo instead.' });
+    }
+  };
+  attachVideo = (n) => {
+    this._video = n;
+    if(n && this.stream){ n.srcObject = this.stream; n.muted = true; n.playsInline = true; if(n.play) n.play().catch(()=>{}); }
+  };
+  capture = () => {
+    const v = this._video; if(!v) return;
+    const c = document.createElement('canvas');
+    c.width = v.videoWidth || 720; c.height = v.videoHeight || 960;
+    c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    this.stopCamera();
+    const src = c.toDataURL('image/png');
+    if(c.toBlob){
+      c.toBlob((blob) => { this._file = blob ? new File([blob], 'capture.png', { type: 'image/png' }) : null; this.setState({ imageSrc: src, cameraOn: false }); }, 'image/png');
+    } else {
+      this._file = null; this.setState({ imageSrc: src, cameraOn: false });
+    }
+  };
+  stopCamera = () => { if(this.stream){ this.stream.getTracks().forEach(t => t.stop()); this.stream = null; } };
+  cancelCamera = () => { this.stopCamera(); this.setState({ cameraOn: false }); };
+  componentDidMount(){
+    // Track viewport for the mobile layout.
+    this._onResize = () => { const m = (typeof window !== 'undefined' ? window.innerWidth : 1200) < 760; if(m !== this.state.isMobile) this.setState({ isMobile: m }); };
+    if(typeof window !== 'undefined') window.addEventListener('resize', this._onResize);
+    this._onResize();
+    this._lastTrigger = this.triggerWord; this._lastRating = this.artistRating; this._lastImg = this.imageUrl;
+    this._mfPoll = setInterval(() => {
+      const t = this.triggerWord, r = this.artistRating, im = this.imageUrl;
+      if(t !== this._lastTrigger || r !== this._lastRating || im !== this._lastImg){
+        this._lastTrigger = t; this._lastRating = r; this._lastImg = im; this.forceUpdate();
+      }
+    }, 600);
+  }
+  componentWillUnmount(){ this.stopCamera(); if(this._mfPoll) clearInterval(this._mfPoll); if(this._onResize && typeof window !== 'undefined') window.removeEventListener('resize', this._onResize); }
+
+  generate = async () => {
+    const p = this.state.prompt.trim();
+    if(p.length < 10){ this.setState({ error: 'PLEASE TYPE SOME SHIT FIRST' }); return; }
+    this.setState({ error: '' });
+    const n = Math.max(1, Math.min(4, this.state.variations));
+    const items = Array.from({ length: n }, (_, i) => ({ key: 'o' + i, label: 'Output #' + (i + 1), prompt: p, status: 'loading', src: null, filter: 'none' }));
+    this.setState({ view: 'results', results: items });
+    this.runGeneration(p, n);
+  };
+
+  // Endpoints (overridable): window.TATTTY_WORKER_URL / window.TATTTY_UPLOAD_URL
+  get workerUrl(){ return (typeof window !== 'undefined' && window.TATTTY_WORKER_URL) || 'https://api.tattty.com'; }
+  get uploadUrl(){ return (typeof window !== 'undefined' && window.TATTTY_UPLOAD_URL) || 'https://model.avi-kay2019.workers.dev'; }
+
+  runGeneration = async (prompt, n) => {
+    // Back-compat: a custom per-item override still wins.
+    if(typeof window !== 'undefined' && typeof window.TATTTY_GENERATE === 'function'){
+      this.state.results.forEach((it, i) => setTimeout(() => this.completeItem(it.key), 600 + i * 500));
+      return;
+    }
+    try {
+      // 1) Optional image upload -> { url }. Sends the real File (name + type), matching the embed's formData.append("file", state.file).
+      let uploads = '';
+      if(this._file){
+        const fd = new FormData();
+        fd.append('file', this._file);
+        const ur = await fetch(this.uploadUrl, { method: 'POST', body: fd });
+        if(!ur.ok){ const t = await ur.text().catch(()=>''); throw new Error('Upload failed (' + ur.status + ')' + (t ? ': ' + t.slice(0,200) : '')); }
+        const ud = await ur.json();
+        if(!ud || !ud.url) throw new Error('Upload returned no url. Response: ' + JSON.stringify(ud).slice(0,200));
+        uploads = ud.url;
+      }
+      // 2) Worker call -> { urls: [...] }
+      const res = await fetch(this.workerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          version: this.version,
+          prompt: prompt,
+          numOutputs: n,
+          uploads: uploads,
+          customer_id: this.customerId
+        })
+      });
+      if(!res.ok){ const t = await res.text().catch(()=>''); throw new Error('Worker failed (' + res.status + ')' + (t ? ': ' + t.slice(0,200) : '')); }
+      const data = await res.json();
+      const urls = (data && data.urls) || [];
+      if(!urls.length) throw new Error('Worker returned no urls. Response: ' + JSON.stringify(data).slice(0,200));
+      this.setState(s => ({ results: s.results.map((it, i) => ({ ...it, status: 'done', src: (urls[i] != null ? urls[i] : it.src), filter: 'none' })) }));
+    } catch(e){
+      console.error('Generation failed:', e);
+      this.setState({ view: 'create', results: [], error: (e && e.message) ? e.message : String(e) });
+    }
+  };
+
+  // OPTIONAL OVERRIDE: define window.TATTTY_GENERATE({image, label, prompt, customerId, version}) -> Promise<imageUrl>
+  // to bypass the built-in endpoints and fill each result card yourself.
+  completeItem = async (key) => {
+    let src = this.state.imageSrc;
+    if(typeof window !== 'undefined' && typeof window.TATTTY_GENERATE === 'function'){
+      try {
+        const r = this.state.results.find(x => x.key === key);
+        src = await window.TATTTY_GENERATE({
+          image: this.state.imageSrc,
+          label: r && r.label,
+          prompt: r && r.prompt,
+          customerId: this.customerId,  // hidden field from Liquid
+          version: this.version         // hidden metafield custom.version
+        });
+      } catch(e){ console.error('TATTTY_GENERATE failed:', e); this.setState({ error: 'Generation failed: ' + ((e && e.message) ? e.message : String(e)) }); }
+    }
+    this.setState(s => ({ results: s.results.map(it => it.key === key ? { ...it, status: 'done', src } : it) }));
+  };
+
+  createAnother = () => this.setState({ view: 'create', results: [], lightboxIndex: null });
+
+  openLightbox = (i) => this.setState({ lightboxIndex: i });
+  closeLightbox = () => this.setState({ lightboxIndex: null });
+  lbStop = (e) => { if(e && e.stopPropagation) e.stopPropagation(); };
+  lbPrev = (e) => { if(e && e.stopPropagation) e.stopPropagation(); this.setState(s => ({ lightboxIndex: Math.max(0, (s.lightboxIndex || 0) - 1) })); };
+  lbNext = (e) => { if(e && e.stopPropagation) e.stopPropagation(); this.setState(s => ({ lightboxIndex: Math.min(s.results.length - 1, (s.lightboxIndex || 0) + 1) })); };
+
+  download = async (item) => {
+    const url = item && item.src; if(!url) return;
+    try {
+      const res = await fetch(url);
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = ('tattty-' + (item.label || 'image')).replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.png';
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch(e) {
+      console.error('Download failed:', e);
+      alert('Download failed: ' + ((e && e.message) ? e.message : String(e)));
+    }
+  };
+
+  share = async (item) => {
+    const url = item && item.src; if(!url) return;
+    try {
+      if(navigator.share){ await navigator.share({ url: url }); }
+      else if(navigator.clipboard){ await navigator.clipboard.writeText(url); alert('Link copied to clipboard'); }
+      else { throw new Error('Sharing not supported in this browser'); }
+    } catch(e){
+      if(e && e.name === 'AbortError') return; // user closed the share sheet on purpose
+      console.error('Share failed:', e);
+      alert('Share failed: ' + ((e && e.message) ? e.message : String(e)));
+    }
+  };
+
+  // Fixed 2x2 square grid so every result tile is a true square that fits without scrolling.
+  _grid(){
+    return { cols: 'repeat(2,1fr)', rows: 'repeat(2,1fr)', aspect: '1' };
+  }
+
+  renderVals(){
+    const results = this.state.results.map((it, idx) => ({
+      key: it.key, label: it.label, src: it.src, filter: it.filter,
+      loading: it.status === 'loading', done: it.status === 'done',
+      imgEl: it.status === 'done'
+        ? React.createElement('img', { src: it.src, alt: it.label, style: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' } })
+        : null,
+      open: () => this.openLightbox(idx),
+      download: () => this.download(it),
+      share: () => this.share(it)
+    }));
+    const primary = this.primary;
+    const ratingVal = this.artistRating;
+    const filled = Math.round(ratingVal);
+    const stars = Array.from({ length: 5 }, (_, i) => ({ fill: i < filled ? primary : '#dcdce0' }));
+    const creditN = Math.max(1, Math.min(4, this.state.variations));
+    const imgUrl = this.imageUrl;
+    const refImageEl = imgUrl
+      ? React.createElement('img', { src: imgUrl, alt: 'reference', style: { width: '100%', height: '100%', objectFit: 'cover', display: 'block' } })
+      : React.createElement('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#b4b7bd', textAlign: 'center', padding: '20px' } },
+          React.createElement('svg', { width: 34, height: 34, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' },
+            React.createElement('rect', { x: 3, y: 3, width: 18, height: 18, rx: 2 }),
+            React.createElement('circle', { cx: 8.5, cy: 8.5, r: 1.5 }),
+            React.createElement('path', { d: 'M21 15l-5-5L5 21' })),
+          React.createElement('span', { style: { fontSize: '12px', fontFamily: 'ui-monospace,Menlo,monospace' } }, 'custom.image_url'));
+    return {
+      isCreate: true,
+      isResults: this.state.view === 'results',
+      createDir: this.state.isMobile ? 'column' : 'row',
+      createGap: this.state.isMobile ? '16px' : '24px',
+      createPad: this.state.isMobile ? '14px' : '26px 36px',
+      createScroll: this.state.isMobile ? 'auto' : 'hidden',
+      leftFlex: this.state.isMobile ? 'none' : '1',
+      leftMinH: this.state.isMobile ? '62vh' : '0',
+      panelW: this.state.isMobile ? '100%' : '362px',
+      showPanelExtras: !this.state.isMobile,
+      hasImage: !!this.state.imageSrc && this.state.view === 'create',
+      imageSrc: this.state.imageSrc,
+      imageEl: this.state.imageSrc
+        ? React.createElement('img', { src: this.state.imageSrc, alt: 'upload', style: { maxWidth: '100%', maxHeight: '70vh', borderRadius: '16px', objectFit: 'contain', boxShadow: '0 12px 34px -20px rgba(0,0,0,.35)' } })
+        : null,
+      showUploadPrompt: !this.state.imageSrc && !this.state.cameraOn && this.state.view === 'create',
+      showCamera: this.state.cameraOn && this.state.view === 'create',
+      cameraError: this.state.cameraError,
+      prompt: this.state.prompt,
+      promptMode: this.promptMode,
+      promptHint: this.promptMode
+        ? 'Custom prompt active.'
+        : 'Describe a style, or set the number of outputs on the right and generate.',
+      noticeText: this.state.error || (this.promptMode ? 'Custom prompt active.' : 'Describe a style, or set the number of outputs on the right and generate.'),
+      noticeColor: this.state.error ? '#c0392b' : '#8b8f96',
+      noticeWeight: this.state.error ? '600' : '400',
+      noticeSize: this.state.error ? '16px' : '12.5px',
+      noticeAlign: this.state.error ? 'center' : 'left',
+      variations: this.state.variations,
+      stars,
+      ratingText: (Math.round(ratingVal * 10) / 10).toFixed(1),
+      triggerWord: this.triggerWord,
+      refImageEl,
+      creditText: creditN + (creditN === 1 ? ' credit' : ' credits'),
+      generateDisabled: false,
+      genBg: primary,
+      genCursor: 'pointer',
+      genBgSolid: primary,
+      results,
+      gridCols: this._grid().cols,
+      gridRows: this._grid().rows,
+      gridAspect: this._grid().aspect,
+      gridFit: this.state.isMobile ? 'width:100%' : 'height:100%',
+      lightboxOpen: this.state.lightboxIndex != null,
+      hasPrev: this.state.lightboxIndex != null && this.state.lightboxIndex > 0,
+      hasNext: this.state.lightboxIndex != null && this.state.lightboxIndex < this.state.results.length - 1,
+      lightboxImgEl: (this.state.lightboxIndex != null && this.state.results[this.state.lightboxIndex] && this.state.results[this.state.lightboxIndex].src)
+        ? React.createElement('img', { src: this.state.results[this.state.lightboxIndex].src, alt: '', onClick: (e) => e.stopPropagation(), style: { maxWidth: 'min(92%,760px)', maxHeight: '74vh', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 10px 40px rgba(0,0,0,.5)' } })
+        : null,
+      closeLightbox: this.closeLightbox,
+      lbPrev: this.lbPrev,
+      lbNext: this.lbNext,
+      lbStop: this.lbStop,
+      lbDownload: (e) => { if(e && e.stopPropagation) e.stopPropagation(); const it = this.state.results[this.state.lightboxIndex]; if(it) this.download(it); },
+      lbShare: (e) => { if(e && e.stopPropagation) e.stopPropagation(); const it = this.state.results[this.state.lightboxIndex]; if(it) this.share(it); },
+      fileInputRef: this.fileInputRef,
+      attachVideo: this.attachVideo,
+      onPrompt: this.onPrompt,
+      onSlider: this.onSlider,
+      triggerUpload: this.triggerUpload,
+      onFile: this.onFile,
+      onDrop: this.onDrop,
+      onDragOver: this.onDragOver,
+      removeImage: this.removeImage,
+      startCamera: this.startCamera,
+      capture: this.capture,
+      cancelCamera: this.cancelCamera,
+      generate: this.generate,
+      createAnother: this.createAnother,
+      incVar: () => this.setVariations(1),
+      decVar: () => this.setVariations(-1)
+    };
+  }
+
+  constructor(props){
+    super(props);
+    this.fileInputRef = React.createRef();
+  }
+}
+</script>
+</body>
+</html>

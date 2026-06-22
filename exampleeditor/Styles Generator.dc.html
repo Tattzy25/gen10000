@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+body{font-family:'Poppins',system-ui,-apple-system,sans-serif;background:#fff;color:#141414;-webkit-font-smoothing:antialiased;}
+textarea,select,button{font-family:inherit;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-440px 0}100%{background-position:440px 0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.scl::-webkit-scrollbar{width:8px;height:10px}
+.scl::-webkit-scrollbar-thumb{background:#d4d6da;border-radius:8px}
+.scl::-webkit-scrollbar-track{background:transparent}
+</style>
+</helmet>
+<div style="height:100vh;display:flex;flex-direction:column;background:#fff;">
+
+  <main style="flex:1;min-height:0;">
+
+    <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ true }}">
+      <div style="height:100%;display:flex;gap:24px;padding:26px 36px;">
+
+        <div onDrop="{{ onDrop }}" onDragOver="{{ onDragOver }}" style="flex:1;min-width:0;background:linear-gradient(180deg,#f6faff 0%,#ffffff 40%);border:1px solid #eef1f5;border-radius:24px;box-shadow:0 1px 2px rgba(20,30,60,.04),0 26px 64px -36px rgba(40,80,170,.22);padding:26px;display:flex;flex-direction:column;">
+          <input type="file" accept="image/*" ref="{{ fileInputRef }}" onChange="{{ onFile }}" style="display:none" />
+
+          <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;">
+
+            <sc-if value="{{ hasImage }}" hint-placeholder-val="{{ false }}">
+              <div style="position:relative;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;">
+                {{ imageEl }}
+                <button onClick="{{ removeImage }}" style="position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showCamera }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;">
+                <video ref="{{ attachVideo }}" style="max-width:100%;max-height:62vh;border-radius:16px;background:#000;"></video>
+                <div style="display:flex;gap:12px;">
+                  <button onClick="{{ capture }}" style="padding:12px 26px;border-radius:12px;border:none;background:#16181a;color:#fff;font-size:14.5px;font-weight:600;cursor:pointer;">Capture</button>
+                  <button onClick="{{ cancelCamera }}" style="padding:12px 22px;border-radius:12px;border:1px solid #dfe2e6;background:#fff;color:#141414;font-size:14.5px;font-weight:500;cursor:pointer;">Cancel</button>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showUploadPrompt }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#9aa0a6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <div style="font-size:16px;color:#7c8088;">Start camera, upload a photo, or drag and drop an image.</div>
+                <div style="display:flex;gap:14px;margin-top:6px;">
+                  <button onClick="{{ startCamera }}" style="display:flex;align-items:center;gap:9px;padding:12px 20px;border-radius:12px;border:1px solid #dfe2e6;background:#fff;font-size:14.5px;font-weight:500;color:#141414;cursor:pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Start Camera
+                  </button>
+                  <button onClick="{{ triggerUpload }}" style="display:flex;align-items:center;gap:9px;padding:12px 20px;border-radius:12px;border:none;background:#f1f2f4;font-size:14.5px;font-weight:500;color:#141414;cursor:pointer;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                    Upload Photo
+                  </button>
+                </div>
+                <sc-if value="{{ cameraError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13px;color:#c0392b;max-width:320px;">{{ cameraError }}</div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+          </div>
+
+          <div style="flex:none;margin-top:18px;border-top:1px solid #eef0f3;padding-top:16px;">
+            <textarea value="{{ prompt }}" onChange="{{ onPrompt }}" placeholder="Or describe your own style — type a prompt to generate without picking presets…" style="width:100%;min-height:58px;max-height:130px;resize:vertical;border:1px solid #e6e8ec;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45;color:#141414;outline:none;background:#fff;"></textarea>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:10px;">
+              <span style="font-size:12.5px;color:#8b8f96;">{{ promptHint }}</span>
+              <sc-if value="{{ promptMode }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:8px;flex:none;">
+                  <span style="font-size:12.5px;color:#7c8088;font-weight:500;">Variations</span>
+                  <button onClick="{{ decVar }}" style="width:30px;height:30px;border-radius:9px;border:1px solid #e2e4e8;background:#fff;font-size:18px;line-height:1;color:#141414;cursor:pointer;display:flex;align-items:center;justify-content:center;">–</button>
+                  <span style="min-width:20px;text-align:center;font-weight:600;font-size:14px;">{{ variations }}</span>
+                  <button onClick="{{ incVar }}" style="width:30px;height:30px;border-radius:9px;border:1px solid #e2e4e8;background:#fff;font-size:17px;line-height:1;color:#141414;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:362px;flex:none;display:flex;flex-direction:column;gap:14px;">
+          <div class="scl" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:10px;padding-right:6px;">
+            <sc-for list="{{ styleCards }}" as="st" hint-placeholder-count="6">
+              <div onClick="{{ st.toggle }}" style="flex:none;padding:13px 15px;border-radius:14px;cursor:pointer;transition:background .14s,border-color .14s,box-shadow .14s;background:{{ st.bg }};border:{{ st.border }};box-shadow:{{ st.shadow }};opacity:{{ st.opacity }};pointer-events:{{ st.pe }};">
+                <div style="font-size:14.5px;font-weight:600;color:#141414;margin-bottom:3px;">{{ st.label }}</div>
+                <div style="font-size:12.5px;line-height:1.45;color:#8b8f96;">{{ st.description }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="flex:none;display:flex;flex-direction:column;gap:11px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:#7c8088;font-weight:500;">
+              <span>{{ counterText }}</span>
+              <span>{{ modelName }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <span style="font-size:11px;font-weight:600;color:#7c8088;letter-spacing:.06em;">MODEL</span>
+              <div style="position:relative;">
+                <select value="{{ modelId }}" onChange="{{ onModel }}" style="width:100%;appearance:none;-webkit-appearance:none;background:#f4f5f6;border:1px solid #e6e8ec;border-radius:12px;padding:12px 38px 12px 14px;font-size:14px;font-weight:500;color:#141414;cursor:pointer;outline:none;">
+                  <sc-for list="{{ models }}" as="m" hint-placeholder-count="1"><option value="{{ m.id }}">{{ m.optionLabel }}</option></sc-for>
+                </select>
+                <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:#8a8e95;display:flex;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+            </div>
+            <button onClick="{{ generate }}" disabled="{{ generateDisabled }}" style="width:100%;border:none;border-radius:14px;padding:15px;font-size:15.5px;font-weight:600;color:#fff;background:{{ genBg }};cursor:{{ genCursor }};transition:background .15s;">Generate Styles</button>
+          </div>
+        </div>
+
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isResults }}" hint-placeholder-val="{{ false }}">
+      <div style="height:100%;display:flex;flex-direction:column;padding:24px 36px 28px;">
+        <div class="scl" style="flex:1;min-height:0;display:flex;gap:24px;overflow-x:auto;overflow-y:hidden;align-items:stretch;padding:6px 2px 14px;">
+          <sc-for list="{{ results }}" as="r" hint-placeholder-count="4">
+            <div style="flex:none;width:322px;height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #ececef;border-radius:18px;overflow:hidden;box-shadow:0 12px 32px -20px rgba(0,0,0,.28);animation:fadeUp .4s ease both;">
+              <div style="flex:1;min-height:0;position:relative;background:#f3f3f4;">
+                <sc-if value="{{ r.loading }}" hint-placeholder-val="{{ true }}">
+                  <div style="position:absolute;inset:0;background:linear-gradient(110deg,#ececec 8%,#f6f6f6 18%,#ececec 33%);background-size:440px 100%;animation:shimmer 1.4s infinite linear;display:flex;align-items:center;justify-content:center;">
+                    <div style="width:42px;height:42px;border-radius:50%;border:3px solid #dadadd;border-top-color:#a9abb0;animation:spin .9s linear infinite;"></div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ r.done }}" hint-placeholder-val="{{ false }}">
+                  {{ r.imgEl }}
+                </sc-if>
+              </div>
+              <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;">
+                <span style="font-size:16px;font-weight:600;color:#141414;">{{ r.label }}</span>
+                <button onClick="{{ r.download }}" style="display:flex;align-items:center;gap:7px;background:none;border:none;font-size:14px;font-weight:500;color:#141414;cursor:pointer;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download
+                </button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="flex:none;display:flex;justify-content:center;padding-top:20px;">
+          <button onClick="{{ createAnother }}" style="border:none;border-radius:999px;padding:15px 34px;font-size:15.5px;font-weight:600;color:#fff;background:{{ genBgSolid }};cursor:pointer;">Create another set</button>
+        </div>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;primaryColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#16181a&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;maxOutputs&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:12,&quot;min&quot;:1,&quot;max&quot;:24,&quot;tsType&quot;:&quot;number&quot;}}">
+class Component extends DCLogic {
+  models = [
+    { id: 'tattty-core', name: 'TaTTTy Core', maxOutput: 12, desc: 'Balanced photo-to-art engine' }
+    // Add more models here — each {id, name, maxOutput}. The selector,
+    // selection cap, and variation count all read from this array dynamically.
+  ];
+
+  styles = [
+    { id:'risograph', label:'Risograph', description:'Vibrant neon overlays with grainy lo-fi print textures.' },
+    { id:'ukiyo-e', label:'Ukiyo-e', description:'Classic woodblock aesthetics with bold flat color planes.' },
+    { id:'infrared', label:'Infrared', description:'High-energy thermal heat maps in surreal neon palettes.' },
+    { id:'brutalism', label:'Vector Brutalism', description:'Jagged raw shapes and disruptive modern graphic energy.' },
+    { id:'alchemical-etch', label:'Alchemical Etch', description:'Delicate 17th-century occult ink on aged parchment.' },
+    { id:'american-traditional', label:'American Traditional', description:'Bold iconic tattoo imagery with timeless old-school punch.' },
+    { id:'japanese-irezumi', label:'Japanese Irezumi', description:'Flowing dramatic tattoo forms with classic Japanese power.' },
+    { id:'ornamental-filigree', label:'Ornamental Filigree', description:'Elegant ornamental linework with intricate decorative flow.' },
+    { id:'fine-line', label:'Fine Line', description:'Delicate minimal tattoo lines with subtle refined detail.' },
+    { id:'black-and-grey-realism', label:'Black & Grey Realism', description:'Smooth realistic shading with dramatic monochrome depth.' },
+    { id:'neo-traditional', label:'Neo Traditional', description:'Bold classic tattoo forms with rich modern color depth.' },
+    { id:'geometric-mandala', label:'Geometric Mandala', description:'Sacred symmetry with crisp linework and patterned balance.' },
+    { id:'micro-realism', label:'Micro Realism', description:'Tiny hyper-detailed realism with delicate precision focus.' },
+    { id:'chicano-black-grey', label:'Chicano Black & Grey', description:'Smooth black and grey drama with lowrider street soul.' },
+    { id:'cybersigilism', label:'Cybersigilism', description:'Sharp futuristic sigils with dark alien ornamental flow.' },
+    { id:'halftone-pop', label:'Halftone Pop', description:'Graphic Ben-Day dots for high-contrast newspaper vibes.' },
+    { id:'charcoal', label:'Charcoal', description:'Moody smudged carbon textures with raw hand-drawn soul.' },
+    { id:'watercolor', label:'Watercolor', description:'Airy brushwork and delicate pastel atmosphere.' },
+    { id:'anime', label:'Anime', description:'Soft cinematic anime look with painterly light.' },
+    { id:'trash-polka', label:'Trash Polka', description:'Aggressive red and black collage with chaotic brushstrokes.' },
+    { id:'ignorant-tattoo', label:'Ignorant Style', description:'Raw, deliberate unpolished linework with a stark minimalism.' },
+    { id:'woodcut-engraving', label:'Woodcut Engraving', description:'Harsh parallel hatching and thick lines of medieval prints.' },
+    { id:'glitch-ink', label:'Glitch Ink', description:'Fragmented digital errors with chromatic offset line work.' },
+    { id:'biomechanical', label:'Biomechanical', description:'Fleshy machinery, metallic gears, and deep skin integration.' },
+    { id:'continuous-line', label:'Continuous Line', description:'Minimalist contour art formed by one single unbroken line.' },
+    { id:'heavy-blackwork', label:'Heavy Blackwork', description:'Massive solid black fills shaping crisp negative space art.' },
+    { id:'sketchwork', label:'Sketchwork', description:'Messy draftsman blueprints with rough, overlapping strokes.' },
+    { id:'stippling-dotwork', label:'Stippling Dotwork', description:'Smooth gradient shading built entirely from microscopic dots.' },
+    { id:'futuristic', label:'Futuristic', description:'Ethereal sci-fi glow with blue tones and futuristic cityscape.' },
+    { id:'cubist-fracture', label:'Cubist Fracture', description:'Sharp fractured geometry with layered multi-angle forms.' },
+    { id:'art-deco-luxe', label:'Art Deco Luxe', description:'Elegant geometric glamour with metallic symmetry and shine.' },
+    { id:'art-nouveau-bloom', label:'Art Nouveau Bloom', description:'Flowing ornamental curves with floral elegance and grace.' },
+    { id:'fauvist-flame', label:'Fauvist Flame', description:'Wild expressive color with bold painterly emotional energy.' },
+    { id:'surreal-dreamscape', label:'Surreal Dreamscape', description:'Dreamlike symbolism with uncanny space and lucid atmosphere.' },
+    { id:'bauhaus-grid', label:'Bauhaus Grid', description:'Clean geometric structure with bold modern design order.' },
+    { id:'op-art-pulse', label:'Op Art Pulse', description:'Hypnotic optical patterns with vibrating visual movement.' },
+    { id:'constructivist-poster', label:'Constructivist Poster', description:'Angular poster drama with striking industrial graphic force.' },
+    { id:'photoreal-chrome', label:'Photoreal Chrome', description:'Ultra-detailed realism with polished reflections and gloss.' },
+    { id:'precisionist-steel', label:'Precisionist Steel', description:'Machine-age clarity with crisp industrial forms and depth.' },
+    { id:'pointillist-glow', label:'Pointillist Glow', description:'Shimmering color built from dense luminous dotted texture.' },
+    { id:'isometric-world', label:'Isometric World', description:'Stylized spatial depth with clean geometric dimensionality.' },
+    { id:'magical-realism', label:'Magical Realism', description:'Real-world beauty with subtle impossible dreamlike detail.' },
+    { id:'kinetic-motion', label:'Kinetic Motion', description:'Rhythmic speed trails with layered energy and momentum.' },
+    { id:'vorticist-shards', label:'Vorticist Shards', description:'Hard-edged abstraction with vortex tension and force.' },
+    { id:'color-field-aura', label:'Color Field Aura', description:'Soft atmospheric color masses with emotional tonal depth.' },
+    { id:'suprematist-minimal', label:'Suprematist Minimal', description:'Pure abstract geometry with stark minimal visual power.' },
+    { id:'lightform-zero', label:'Lightform Zero', description:'Minimal glowing light sculptures with sleek futuristic calm.' },
+    { id:'psychedelic-poster', label:'Psychedelic Poster', description:'Swirling retro color with warped hallucinatory intensity.' },
+    { id:'grunge-collage', label:'Grunge Collage', description:'Torn layered textures with dirty graphic rebellious energy.' },
+    { id:'cyberpunk', label:'Cyberpunk', description:'Gritty neon-drenched urban sprawl with high-tech chrome visuals.' },
+    { id:'lofi-comic', label:'Lo-Fi Comic', description:'Graphic comic style with bold lines and soft retro colors.' }
+  ];
+
+  filterMap = {
+    'charcoal':'grayscale(1) contrast(1.45) brightness(1.05)',
+    'anime':'saturate(1.6) contrast(1.08) brightness(1.06)',
+    'trash-polka':'grayscale(.5) saturate(2.4) contrast(1.5) hue-rotate(-12deg)',
+    'ignorant-tattoo':'grayscale(1) contrast(2.3) brightness(1.18)',
+    'watercolor':'saturate(1.35) brightness(1.12) contrast(.92) blur(.5px)',
+    'infrared':'saturate(3) hue-rotate(175deg) contrast(1.4)',
+    'black-and-grey-realism':'grayscale(1) contrast(1.2)',
+    'chicano-black-grey':'grayscale(1) contrast(1.28) brightness(1.04)',
+    'cyberpunk':'saturate(2.4) hue-rotate(-25deg) contrast(1.3) brightness(1.05)',
+    'futuristic':'saturate(1.8) hue-rotate(160deg) contrast(1.15) brightness(1.1)',
+    'woodcut-engraving':'grayscale(1) contrast(2) brightness(1.1)',
+    'heavy-blackwork':'grayscale(1) contrast(2.6) brightness(.95)',
+    'continuous-line':'grayscale(1) contrast(2.4) brightness(1.2)',
+    'stippling-dotwork':'grayscale(1) contrast(1.5) brightness(1.08)',
+    'risograph':'saturate(2.2) contrast(1.25) hue-rotate(-18deg) brightness(1.05)',
+    'ukiyo-e':'saturate(1.4) contrast(1.15) sepia(.18)',
+    'halftone-pop':'grayscale(.3) contrast(1.6) saturate(1.8)',
+    'neo-traditional':'saturate(1.7) contrast(1.18)',
+    'fine-line':'grayscale(1) contrast(1.55) brightness(1.2)',
+    'glitch-ink':'saturate(2) hue-rotate(40deg) contrast(1.35)',
+    'biomechanical':'grayscale(.7) contrast(1.4) brightness(.92)',
+    'psychedelic-poster':'saturate(2.6) hue-rotate(70deg) contrast(1.25)',
+    'pointillist-glow':'saturate(1.6) brightness(1.12) blur(.4px)',
+    'fauvist-flame':'saturate(2.4) hue-rotate(-30deg) contrast(1.2)',
+    'surreal-dreamscape':'saturate(1.5) hue-rotate(20deg) brightness(1.1) contrast(1.05)',
+    'photoreal-chrome':'contrast(1.2) saturate(1.1) brightness(1.05)',
+    'alchemical-etch':'sepia(.6) grayscale(.4) contrast(1.35) brightness(1.05)',
+    'sketchwork':'grayscale(1) contrast(1.7) brightness(1.15)'
+  };
+
+  promptFilters = [
+    'contrast(1.15) saturate(1.25)',
+    'grayscale(1) contrast(1.4)',
+    'saturate(1.9) hue-rotate(-22deg) contrast(1.2)',
+    'saturate(1.45) brightness(1.1) blur(.4px)',
+    'sepia(.4) contrast(1.25)',
+    'grayscale(.4) saturate(2.1) contrast(1.3)',
+    'hue-rotate(150deg) saturate(1.8) contrast(1.2)',
+    'contrast(1.9) brightness(1.15) grayscale(.6)',
+    'saturate(2.4) hue-rotate(60deg)',
+    'brightness(1.08) contrast(1.3) saturate(1.4)',
+    'grayscale(1) contrast(2.1) brightness(1.1)',
+    'sepia(.25) saturate(1.6) contrast(1.15)'
+  ];
+
+  state = {
+    view: 'create',
+    imageSrc: null,
+    selected: [],
+    prompt: '',
+    variations: 4,
+    modelId: 'tattty-core',
+    cameraOn: false,
+    cameraError: '',
+    results: []
+  };
+
+  get currentModel(){ return this.models.find(m => m.id === this.state.modelId) || this.models[0]; }
+  get maxSelectable(){
+    const cap = (this.props && this.props.maxOutputs != null) ? this.props.maxOutputs : 12;
+    return Math.min(this.currentModel.maxOutput, cap);
+  }
+  get promptMode(){ return this.state.prompt.trim().length > 0; }
+  get primary(){ return (this.props && this.props.primaryColor) || '#16181a'; }
+  get canGenerate(){
+    if(!this.state.imageSrc) return false;
+    return this.promptMode ? true : this.state.selected.length > 0;
+  }
+
+  toggleStyle = (id) => {
+    if(this.promptMode) return;
+    this.setState(s => {
+      const sel = new Set(s.selected);
+      if(sel.has(id)){ sel.delete(id); }
+      else { if(sel.size >= this.maxSelectable) return null; sel.add(id); }
+      return { selected: [...sel] };
+    });
+  };
+
+  onPrompt = (e) => this.setState({ prompt: e.target.value });
+  onModel = (e) => this.setState({ modelId: e.target.value, selected: [] });
+  setVariations = (d) => this.setState(s => ({ variations: Math.max(1, Math.min(this.maxSelectable, s.variations + d)) }));
+
+  triggerUpload = () => { if(this.fileInputRef && this.fileInputRef.current) this.fileInputRef.current.click(); };
+  onFile = (e) => { const f = e.target.files && e.target.files[0]; if(f) this.readFile(f); e.target.value = ''; };
+  readFile = (f) => { const r = new FileReader(); r.onload = () => this.setState({ imageSrc: r.result, cameraOn: false }); r.readAsDataURL(f); };
+  onDrop = (e) => { e.preventDefault(); const f = e.dataTransfer.files && e.dataTransfer.files[0]; if(f && f.type.indexOf('image/') === 0) this.readFile(f); };
+  onDragOver = (e) => e.preventDefault();
+  removeImage = () => this.setState({ imageSrc: null });
+
+  startCamera = async () => {
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      this.setState({ cameraOn: true, cameraError: '' });
+    } catch(err) {
+      this.setState({ cameraError: 'Camera unavailable here — upload or drag a photo instead.' });
+    }
+  };
+  attachVideo = (n) => {
+    this._video = n;
+    if(n && this.stream){ n.srcObject = this.stream; n.muted = true; n.playsInline = true; if(n.play) n.play().catch(()=>{}); }
+  };
+  capture = () => {
+    const v = this._video; if(!v) return;
+    const c = document.createElement('canvas');
+    c.width = v.videoWidth || 720; c.height = v.videoHeight || 960;
+    c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    this.stopCamera();
+    this.setState({ imageSrc: c.toDataURL('image/png'), cameraOn: false });
+  };
+  stopCamera = () => { if(this.stream){ this.stream.getTracks().forEach(t => t.stop()); this.stream = null; } };
+  cancelCamera = () => { this.stopCamera(); this.setState({ cameraOn: false }); };
+  componentWillUnmount(){ this.stopCamera(); }
+
+  filterFor = (id, idx) => {
+    if(this.promptMode) return this.promptFilters[idx % this.promptFilters.length];
+    return this.filterMap[id] || 'contrast(1.12) saturate(1.18)';
+  };
+
+  generate = async () => {
+    if(!this.canGenerate) return;
+    let items;
+    if(this.promptMode){
+      const n = Math.max(1, Math.min(this.maxSelectable, this.state.variations));
+      items = Array.from({ length: n }, (_, i) => ({ key: 'p' + i, label: 'Custom #' + (i + 1), status: 'loading', src: null, filter: this.filterFor(null, i) }));
+    } else {
+      items = this.state.selected.map((id, i) => {
+        const st = this.styles.find(s => s.id === id);
+        return { key: id, label: st ? st.label : id, status: 'loading', src: null, filter: this.filterFor(id, i) };
+      });
+    }
+    this.setState({ view: 'results', results: items });
+    items.forEach((it, i) => {
+      setTimeout(() => this.completeItem(it.key), 700 + i * 620 + Math.random() * 350);
+    });
+  };
+
+  // INTEGRATION SEAM: define window.TATTTY_GENERATE({image, label, prompt}) -> Promise<imageUrl>
+  // to wire the real model endpoint. Without it, results render a local style preview.
+  completeItem = async (key) => {
+    let src = this.state.imageSrc;
+    if(typeof window !== 'undefined' && typeof window.TATTTY_GENERATE === 'function'){
+      try {
+        const r = this.state.results.find(x => x.key === key);
+        src = await window.TATTTY_GENERATE({ image: this.state.imageSrc, label: r && r.label, prompt: this.state.prompt });
+      } catch(e){ /* keep source image on failure */ }
+    }
+    this.setState(s => ({ results: s.results.map(it => it.key === key ? { ...it, status: 'done', src } : it) }));
+  };
+
+  createAnother = () => this.setState({ view: 'create', results: [] });
+
+  download = async (item) => {
+    if(!item.src) return;
+    try {
+      const img = new Image(); img.crossOrigin = 'anonymous';
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = item.src; });
+      const c = document.createElement('canvas');
+      c.width = img.naturalWidth || 800; c.height = img.naturalHeight || 1000;
+      const ctx = c.getContext('2d');
+      ctx.filter = item.filter || 'none';
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      const a = document.createElement('a');
+      a.href = c.toDataURL('image/png');
+      a.download = ('tattty-' + item.label).replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.png';
+      a.click();
+    } catch(e) {
+      const a = document.createElement('a'); a.href = item.src; a.download = 'tattty.png'; a.click();
+    }
+  };
+
+  renderVals(){
+    const sel = new Set(this.state.selected);
+    const disabledList = this.promptMode;
+    const styleCards = this.styles.map(s => {
+      const selected = sel.has(s.id);
+      return {
+        id: s.id, label: s.label, description: s.description,
+        bg: selected ? '#ececec' : '#f7f7f8',
+        border: selected ? '1.5px solid #c4c4c8' : '1px solid #ededf0',
+        shadow: selected ? '0 4px 14px -6px rgba(0,0,0,.18)' : 'none',
+        opacity: disabledList ? '0.4' : '1',
+        pe: disabledList ? 'none' : 'auto',
+        toggle: () => this.toggleStyle(s.id)
+      };
+    });
+    const results = this.state.results.map(it => ({
+      key: it.key, label: it.label, src: it.src, filter: it.filter,
+      loading: it.status === 'loading', done: it.status === 'done',
+      imgEl: it.status === 'done'
+        ? React.createElement('img', { src: it.src, alt: it.label, style: { width: '100%', height: '100%', objectFit: 'cover', filter: it.filter, display: 'block' } })
+        : null,
+      download: () => this.download(it)
+    }));
+    const cm = this.currentModel;
+    const primary = this.primary;
+    return {
+      isCreate: this.state.view === 'create',
+      isResults: this.state.view === 'results',
+      hasImage: !!this.state.imageSrc,
+      imageSrc: this.state.imageSrc,
+      imageEl: this.state.imageSrc
+        ? React.createElement('img', { src: this.state.imageSrc, alt: 'upload', style: { maxWidth: '100%', maxHeight: '70vh', borderRadius: '16px', objectFit: 'contain', boxShadow: '0 12px 34px -20px rgba(0,0,0,.35)' } })
+        : null,
+      showUploadPrompt: !this.state.imageSrc && !this.state.cameraOn,
+      showCamera: this.state.cameraOn,
+      cameraError: this.state.cameraError,
+      prompt: this.state.prompt,
+      promptMode: this.promptMode,
+      promptHint: this.promptMode
+        ? 'Custom prompt active — style presets are disabled.'
+        : 'Leave this empty to pick up to ' + this.maxSelectable + ' presets on the right.',
+      variations: this.state.variations,
+      styleCards,
+      models: this.models.map(m => ({ id: m.id, optionLabel: m.name + ' · up to ' + Math.min(m.maxOutput, (this.props && this.props.maxOutputs != null) ? this.props.maxOutputs : 12) })),
+      modelId: this.state.modelId,
+      modelName: cm.name,
+      counterText: this.promptMode
+        ? (this.state.variations + ' / ' + this.maxSelectable + ' variations')
+        : (this.state.selected.length + ' / ' + this.maxSelectable + ' selected'),
+      generateDisabled: !this.canGenerate,
+      genBg: this.canGenerate ? primary : '#c9cbce',
+      genCursor: this.canGenerate ? 'pointer' : 'not-allowed',
+      genBgSolid: primary,
+      results,
+      fileInputRef: this.fileInputRef,
+      attachVideo: this.attachVideo,
+      onPrompt: this.onPrompt,
+      onModel: this.onModel,
+      triggerUpload: this.triggerUpload,
+      onFile: this.onFile,
+      onDrop: this.onDrop,
+      onDragOver: this.onDragOver,
+      removeImage: this.removeImage,
+      startCamera: this.startCamera,
+      capture: this.capture,
+      cancelCamera: this.cancelCamera,
+      generate: this.generate,
+      createAnother: this.createAnother,
+      incVar: () => this.setVariations(1),
+      decVar: () => this.setVariations(-1)
+    };
+  }
+
+  constructor(props){
+    super(props);
+    this.fileInputRef = React.createRef();
+  }
+}
+</script>
+</body>
+</html>
