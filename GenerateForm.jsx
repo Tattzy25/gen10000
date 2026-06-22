@@ -135,7 +135,7 @@ export default function GenerateForm({ version, customerId }) {
               value={outputs}
               onChange={(e) => setOutputs(Number(e.target.value))}
             >
-              {[1, 2, 4, 8].map((n) => (
+              {[1, 2, 3, 4].map((n) => (
                 <option key={n} value={n}>
                   {n}
                 </option>

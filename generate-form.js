@@ -92,7 +92,7 @@
     var requiredSpan = el("span", styles.required, { text: "*" });
     outputsLabel.appendChild(requiredSpan);
     var select = el("select", styles.select, { id: "tattty-outputs" });
-    [1, 2, 4, 8].forEach(function (n) {
+    [1, 2, 3, 4].forEach(function (n) {
       var opt = el("option", null, { value: n, text: String(n) });
       if (n === 4) opt.selected = true;
       select.appendChild(opt);
