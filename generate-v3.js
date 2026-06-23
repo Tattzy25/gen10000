@@ -20,10 +20,10 @@
     leftPanelRow: "flex:1;",
     leftPanelColumn: "flex:none;min-height:62vh;",
 
-    dropZone: "flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;border-radius:16px;background:#f6faff;",
+    dropZone: "flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;border-radius:16px;background:#f6faff;overflow:hidden;",
 
-    imageWrap: "position:relative;max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;",
-    previewImg: "max-width:100%;max-height:100%;border-radius:16px;object-fit:contain;box-shadow:0 12px 34px -20px rgba(0,0,0,.35);display:block;",
+    imageWrap: "position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;",
+    previewImg: "width:100%;height:100%;object-fit:contain;display:block;",
     removeBtn: "position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.94);box-shadow:0 2px 10px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;",
 
     uploadPrompt: "display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;",
@@ -34,7 +34,7 @@
     cameraError: "font-size:13px;color:#c0392b;max-width:320px;",
 
     cameraWrap: "display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;",
-    video: "max-width:100%;max-height:62vh;border-radius:16px;background:#000;",
+    video: "max-width:100%;max-height:62vh;border-radius:16px;background:#000;transform:scaleX(-1);",
     captureBtn: "padding:12px 26px;border-radius:12px;border:none;background:#16181a;color:#fff;font-size:14.5px;font-weight:600;cursor:pointer;",
     cancelBtn: "padding:12px 22px;border-radius:12px;border:1px solid #dfe2e6;background:#fff;color:#141414;font-size:14.5px;font-weight:500;cursor:pointer;",
 
@@ -276,7 +276,8 @@
     var lightbox = null;
 
     function applyLayout() {
-      if (isMobile()) {
+      var mobile = isMobile();
+      if (mobile) {
         outer.style.cssText = styles.outer + styles.outerColumn;
         leftPanel.style.cssText = styles.leftPanel + styles.leftPanelColumn;
         rightPanel.style.cssText = styles.rightPanel + styles.rightPanelColumn;
@@ -285,6 +286,9 @@
         leftPanel.style.cssText = styles.leftPanel + styles.leftPanelRow;
         rightPanel.style.cssText = styles.rightPanel + styles.rightPanelRow;
       }
+      ratingRow.style.display = mobile ? "none" : "flex";
+      triggerRow.style.display = mobile ? "none" : "flex";
+      refWrap.style.display = mobile ? "none" : "flex";
     }
     window.addEventListener("resize", applyLayout);
     applyLayout();
@@ -357,7 +361,7 @@
 
     function startCamera() {
       navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: "environment" } })
+        .getUserMedia({ video: { facingMode: "user" }, audio: false })
         .then(function (s) {
           stream = s;
           state.cameraOn = true;
@@ -407,7 +411,12 @@
       var c = document.createElement("canvas");
       c.width = videoEl.videoWidth || 720;
       c.height = videoEl.videoHeight || 960;
-      c.getContext("2d").drawImage(videoEl, 0, 0, c.width, c.height);
+      var ctx = c.getContext("2d");
+      ctx.save();
+      ctx.translate(c.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(videoEl, 0, 0, c.width, c.height);
+      ctx.restore();
       stopCamera();
       var src = c.toDataURL("image/png");
       if (c.toBlob) {
